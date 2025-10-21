@@ -28,11 +28,13 @@ const stockNames = [
     "Aestora Fashion Group", "Dreamforge Music", "Cyntra Creative Co.", "PetalPixel Visuals", "Auroria Arts Ltd."
 ];
 
-const stocks = stockNames.map(name => ({
+const stocks = stockNames.map((name, index) => ({
+    id: index, // Add a unique ID for each stock
     name: name,
     percentage: 0,
-    price: Math.random() * 450 + 50, // Harga rawak antara 50 dan 500
-    change: 0
+    price: Math.random() * 450 + 50, // Random price between 50 and 500
+    change: 0,
+    owned: 0 // Number of shares owned by the player
 }));
 
 function displayStocks() {
@@ -45,11 +47,22 @@ function displayStocks() {
 
         stockElement.innerHTML = `
             <h2>${stock.name}</h2>
-            <p>Peratus Saham: ${stock.percentage.toFixed(2)}%</p>
+            <p class="owned">Dimiliki: ${stock.owned}</p>
             <p class="price">RM${stock.price.toFixed(2)}</p>
             <p class="change ${changeClass}">${stock.change.toFixed(2)}%</p>
+            <div class="buy-controls">
+                <input type="number" min="1" placeholder="Qty" id="buy-qty-${stock.id}">
+                <button id="buy-btn-${stock.id}">Beli</button>
+            </div>
         `;
         stocksContainer.appendChild(stockElement);
+
+        document.getElementById(`buy-btn-${stock.id}`).addEventListener('click', () => {
+            const quantity = parseInt(document.getElementById(`buy-qty-${stock.id}`).value, 10);
+            if (!isNaN(quantity) && quantity > 0) {
+                buyStock(stock.id, quantity);
+            }
+        });
     });
 }
 
@@ -59,12 +72,33 @@ function displayFunds() {
 
 function updateStockPrices() {
     stocks.forEach(stock => {
-        const change = (Math.random() - 0.5) * 10; // Random change between -5% and 5%
+        // Makes the market more volatile (-15% to +13%) and slightly bearish.
+        const change = (Math.random() * 28) - 15; // From -15 to +13
         stock.change = change;
-        stock.price *= (1 + change / 100);
+
+        // Ensure price doesn't go below a certain threshold (e.g., $1.00)
+        const newPrice = stock.price * (1 + change / 100);
+        stock.price = Math.max(1.00, newPrice); // Floor price at 1.00
+
         stock.percentage += change;
     });
     displayStocks();
+}
+
+function buyStock(stockId, quantity) {
+    const stock = stocks.find(s => s.id === stockId);
+    if (!stock) return;
+
+    const totalCost = stock.price * quantity;
+
+    if (userFunds >= totalCost) {
+        userFunds -= totalCost;
+        stock.owned += quantity;
+        displayFunds();
+        displayStocks(); // Refresh to update owned count and clear input
+    } else {
+        alert("Dana tidak mencukupi!");
+    }
 }
 
 updateButton.addEventListener('click', () => {

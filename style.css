@@ -2,46 +2,57 @@ body {
     font-family: sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Align to top */
     min-height: 100vh;
     background-color: #f0f0f0;
     margin: 0;
+    padding: 1rem; /* Add some padding to the body */
 }
 
 .container {
     text-align: center;
     background-color: white;
-    padding: 2rem;
+    padding: 1.5rem; /* Reduced padding */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 95%; /* Make container wider */
+    max-width: 1400px;
+}
+
+h1 {
+    font-size: 1.8rem; /* Reduced font size */
 }
 
 #stocks-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+    /* Adjusted for smaller cards, more columns */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem; /* Reduced gap */
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .stock {
     border: 1px solid #ccc;
-    padding: 1rem;
+    padding: 0.75rem; /* Reduced padding */
     border-radius: 5px;
+    font-size: 0.9rem; /* Smaller base font for stock card */
 }
 
 .stock h2 {
     margin-top: 0;
+    font-size: 1rem; /* Reduced font size */
+    margin-bottom: 0.5rem;
 }
 
 .price {
-    font-size: 1.5rem;
+    font-size: 1.2rem; /* Reduced font size */
     font-weight: bold;
-    margin: 0.5rem 0;
+    margin: 0.25rem 0;
 }
 
 .change {
-    font-size: 1rem;
+    font-size: 0.9rem; /* Reduced font size */
 }
 
 .positive {
@@ -56,10 +67,10 @@ button {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 1rem; /* Reduced padding */
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem; /* Reduced font size */
     transition: background-color 0.2s;
 }
 
@@ -68,11 +79,40 @@ button:hover {
 }
 
 #funds-container {
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* Reduced font size */
     font-weight: bold;
     margin-bottom: 1rem;
 }
 
 .bank-label {
     margin-right: 0.5rem;
+}
+
+/* Styles for buy controls */
+.buy-controls {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.buy-controls input {
+    width: 50px; /* Smaller input box */
+    padding: 0.25rem;
+    font-size: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.buy-controls button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.owned {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+    color: #333;
 }
