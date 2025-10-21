@@ -9,12 +9,22 @@
 <body>
     <div class="container">
         <h1>Permainan Simulasi Saham</h1>
-        <div id="funds-container">
-            <span class="bank-label">🏦 Bank:</span>
-            <span id="funds-amount"></span>
+        <div class="stats-container">
+            <div id="funds-container">
+                <span class="bank-label">🏦 Bank:</span>
+                <span id="funds-amount"></span>
+            </div>
+            <div id="portfolio-container">
+                <span class="label">📊 Portfolio:</span>
+                <span id="portfolio-value"></span>
+            </div>
+            <div id="net-worth-container">
+                <span class="label">💰 Nilai Bersih:</span>
+                <span id="net-worth-value"></span>
+            </div>
         </div>
         <div id="stocks-container"></div>
-        <button id="update-button">Kemas kini Harga Saham</button>
+        <button id="update-button" title="Kemas kini Harga Saham (Next Round)">🔄</button>
     </div>
     <script src="script.js"></script>
 </body>

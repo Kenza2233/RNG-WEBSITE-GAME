@@ -1,5 +1,7 @@
 const stocksContainer = document.getElementById('stocks-container');
 const fundsAmount = document.getElementById('funds-amount');
+const portfolioValueEl = document.getElementById('portfolio-value');
+const netWorthValueEl = document.getElementById('net-worth-value');
 const updateButton = document.getElementById('update-button');
 
 let userFunds = 9000000;
@@ -51,26 +53,55 @@ function displayStocks() {
             <p class="price">RM${stock.price.toFixed(2)}</p>
             <p class="change ${changeClass}">${stock.change.toFixed(2)}%</p>
             <div class="buy-controls">
-                <input type="number" min="1" placeholder="Qty" id="buy-qty-${stock.id}">
+                <input type="number" min="1" placeholder="Qty" id="buy-qty-${stock.id}" class="qty-input">
                 <button id="buy-btn-${stock.id}">Beli</button>
+            </div>
+            <div class="sell-controls">
+                <input type="number" min="1" placeholder="Qty" id="sell-qty-${stock.id}" class="qty-input">
+                <button id="sell-btn-${stock.id}">Jual</button>
             </div>
         `;
         stocksContainer.appendChild(stockElement);
 
         document.getElementById(`buy-btn-${stock.id}`).addEventListener('click', () => {
-            const quantity = parseInt(document.getElementById(`buy-qty-${stock.id}`).value, 10);
+            const quantityInput = document.getElementById(`buy-qty-${stock.id}`);
+            const quantity = parseInt(quantityInput.value, 10);
             if (!isNaN(quantity) && quantity > 0) {
                 buyStock(stock.id, quantity);
+                quantityInput.value = ''; // Clear input
+            }
+        });
+
+        document.getElementById(`sell-btn-${stock.id}`).addEventListener('click', () => {
+            const quantityInput = document.getElementById(`sell-qty-${stock.id}`);
+            const quantity = parseInt(quantityInput.value, 10);
+            if (!isNaN(quantity) && quantity > 0) {
+                sellStock(stock.id, quantity);
+                quantityInput.value = ''; // Clear input
             }
         });
     });
 }
 
-function displayFunds() {
+function updateStats() {
+    const portfolioValue = stocks.reduce((total, stock) => total + (stock.price * stock.owned), 0);
+    const netWorth = userFunds + portfolioValue;
+
     fundsAmount.textContent = `RM${userFunds.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    portfolioValueEl.textContent = `RM${portfolioValue.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    netWorthValueEl.textContent = `RM${netWorth.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function updateStockPrices() {
+    // Random Event: Chance for a cash injection
+    if (Math.random() < 0.1) { // 10% chance
+        const sources = ["Kerajaan", "Syarikat Teknologi Terkemuka", "Pelabur Antarabangsa"];
+        const source = sources[Math.floor(Math.random() * sources.length)];
+        const amount = Math.floor(Math.random() * 500000) + 100000; // 100k to 600k
+        userFunds += amount;
+        alert(`🎉 Berita Baik! Anda menerima suntikan dana sebanyak RM${amount.toLocaleString()} daripada ${source}!`);
+    }
+
     stocks.forEach(stock => {
         // Makes the market more volatile (-15% to +13%) and slightly bearish.
         const change = (Math.random() * 28) - 15; // From -15 to +13
@@ -94,18 +125,33 @@ function buyStock(stockId, quantity) {
     if (userFunds >= totalCost) {
         userFunds -= totalCost;
         stock.owned += quantity;
-        displayFunds();
+        updateStats();
         displayStocks(); // Refresh to update owned count and clear input
     } else {
         alert("Dana tidak mencukupi!");
     }
 }
 
+function sellStock(stockId, quantity) {
+    const stock = stocks.find(s => s.id === stockId);
+    if (!stock) return;
+
+    if (stock.owned >= quantity) {
+        const totalCredit = stock.price * quantity;
+        userFunds += totalCredit;
+        stock.owned -= quantity;
+        updateStats(); // Use updateStats to refresh everything
+        displayStocks(); // Refresh to update owned count and clear input
+    } else {
+        alert("Anda tidak mempunyai saham yang mencukupi untuk dijual!");
+    }
+}
+
 updateButton.addEventListener('click', () => {
     updateStockPrices();
-    displayFunds();
+    updateStats();
 });
 
 // Initial display
 displayStocks();
-displayFunds();
+updateStats();
