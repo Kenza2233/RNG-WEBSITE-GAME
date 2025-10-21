@@ -9,6 +9,32 @@ body {
     padding: 1rem;
 }
 
+#news-ticker-container {
+    background-color: #333;
+    color: white;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+#news-ticker-text {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ticker-scroll 20s linear infinite;
+}
+
+@keyframes ticker-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
 .container {
     text-align: center;
     background-color: white;
@@ -153,4 +179,26 @@ h1 {
     font-weight: bold;
     margin-top: 0.5rem;
     color: #333;
+}
+
+#market-event-notification {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    display: none; /* Hidden by default */
+}
+
+.bull-market {
+    background-color: #d4edda; /* Light green */
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.bear-market {
+    background-color: #f8d7da; /* Light red */
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }

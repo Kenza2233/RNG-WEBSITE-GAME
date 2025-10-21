@@ -2,9 +2,62 @@ const stocksContainer = document.getElementById('stocks-container');
 const fundsAmount = document.getElementById('funds-amount');
 const portfolioValueEl = document.getElementById('portfolio-value');
 const netWorthValueEl = document.getElementById('net-worth-value');
+const marketEventNotificationEl = document.getElementById('market-event-notification');
+const newsTickerTextEl = document.getElementById('news-ticker-text');
 const updateButton = document.getElementById('update-button');
 
 let userFunds = 9000000;
+let marketState = 'normal'; // can be 'normal', 'bull', or 'bear'
+
+const economicNewsEvents = [
+    {
+        headline: "TERKINI: Kerajaan mengumumkan pakej rangsangan, meningkatkan keyakinan pelabur!",
+        effect: () => {
+            // Memberi sedikit rangsangan kepada semua harga saham
+            stocks.forEach(stock => {
+                stock.price *= (1 + (Math.random() * 0.02 + 0.01)); // Rangsangan 1-3%
+            });
+            marketState = 'bull'; // Boleh mencetuskan bull market mini
+        }
+    },
+    {
+        headline: "SKANDAL: Sebuah syarikat teknologi besar didapati melakukan penipuan, menggegarkan sektor teknologi!",
+        effect: () => {
+            // Memberi kesan negatif kepada 5 saham teknologi pertama
+            for(let i = 0; i < 5; i++) {
+                stocks[i].price *= (1 - (Math.random() * 0.05 + 0.05)); // Kejatuhan 5-10%
+            }
+        }
+    },
+    {
+        headline: "INOVASI: Syarikat bioteknologi tempatan berjaya menghasilkan penemuan perubatan baharu!",
+        effect: () => {
+            // Memberi rangsangan besar kepada saham bioteknologi (indeks 30-39)
+            for(let i = 30; i <= 39; i++) {
+                stocks[i].price *= (1 + (Math.random() * 0.1 + 0.05)); // Rangsangan 5-15%
+            }
+        }
+    },
+    {
+        headline: "KEGELISAHAN GLOBAL: Ketegangan perdagangan antarabangsa meningkat, menjejaskan pasaran.",
+        effect: () => {
+            // Kesan negatif kecil kepada semua saham
+            stocks.forEach(stock => {
+                stock.price *= (1 - (Math.random() * 0.03 + 0.01)); // Kejatuhan 1-4%
+            });
+            marketState = 'bear';
+        }
+    },
+    {
+        headline: "CUKAI TAK TERDUGA: Kerajaan mengenakan cukai keuntungan luar biasa ke atas syarikat tenaga.",
+        effect: () => {
+            // Memberi kesan negatif kepada saham tenaga (indeks 10-19)
+             for(let i = 10; i <= 19; i++) {
+                stocks[i].price *= (1 - (Math.random() * 0.08 + 0.04)); // Kejatuhan 4-12%
+            }
+        }
+    }
+];
 
 const stockNames = [
     // Teknologi & Digital
@@ -93,6 +146,18 @@ function updateStats() {
 }
 
 function updateStockPrices() {
+    // Economic News RNG
+    if (Math.random() < 0.25) { // 25% chance of a news event
+        const event = economicNewsEvents[Math.floor(Math.random() * economicNewsEvents.length)];
+        event.effect();
+        newsTickerTextEl.textContent = `BERITA EKONOMI: ${event.headline}`;
+        // Force re-render of animation
+        newsTickerTextEl.style.animation = 'none';
+        newsTickerTextEl.offsetHeight; /* trigger reflow */
+        newsTickerTextEl.style.animation = null;
+    }
+
+
     // Random Event: Chance for a cash injection
     if (Math.random() < 0.1) { // 10% chance
         const sources = ["Kerajaan", "Syarikat Teknologi Terkemuka", "Pelabur Antarabangsa"];
@@ -102,9 +167,46 @@ function updateStockPrices() {
         alert(`🎉 Berita Baik! Anda menerima suntikan dana sebanyak RM${amount.toLocaleString()} daripada ${source}!`);
     }
 
+    // Market Event RNG
+    const marketRNG = Math.random();
+    if (marketRNG < 0.2) { // 20% chance of a bull market
+        marketState = 'bull';
+        marketEventNotificationEl.textContent = '📈 PASARAN NAIK! Sentimen pelabur positif.';
+        marketEventNotificationEl.className = 'bull-market';
+        marketEventNotificationEl.style.display = 'block';
+    } else if (marketRNG < 0.4) { // 20% chance of a bear market
+        marketState = 'bear';
+        marketEventNotificationEl.textContent = '📉 PASARAN TURUN! Sentimen pelabur negatif.';
+        marketEventNotificationEl.className = 'bear-market';
+        marketEventNotificationEl.style.display = 'block';
+    } else {
+        marketState = 'normal';
+        marketEventNotificationEl.style.display = 'none';
+    }
+
+    // Dividend RNG
     stocks.forEach(stock => {
-        // Makes the market more volatile (-15% to +13%) and slightly bearish.
-        const change = (Math.random() * 28) - 15; // From -15 to +13
+        if (stock.owned > 0 && Math.random() < 0.05) { // 5% chance for dividend per owned stock
+            const dividendYield = Math.random() * 0.02 + 0.01; // 1% to 3% dividend
+            const dividendAmount = stock.price * stock.owned * dividendYield;
+            userFunds += dividendAmount;
+            alert(`💰 Dividen! ${stock.name} membayar dividen sebanyak RM${dividendAmount.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}!`);
+        }
+    });
+
+    stocks.forEach(stock => {
+        // Stock Price Generator: Fluktuasi harga saham acak (±5-15%)
+        let magnitude = Math.random() * 10 + 5; // 5 to 15
+        let sign = Math.random() < 0.5 ? -1 : 1;
+
+        // Adjust for market state
+        if (marketState === 'bull') {
+            sign = Math.random() < 0.7 ? 1 : -1; // 70% chance of price increase
+        } else if (marketState === 'bear') {
+            sign = Math.random() < 0.7 ? -1 : 1; // 70% chance of price decrease
+        }
+
+        const change = magnitude * sign;
         stock.change = change;
 
         // Ensure price doesn't go below a certain threshold (e.g., $1.00)
