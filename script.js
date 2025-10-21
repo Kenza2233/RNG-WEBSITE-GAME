@@ -4,10 +4,28 @@ const portfolioValueEl = document.getElementById('portfolio-value');
 const netWorthValueEl = document.getElementById('net-worth-value');
 const marketEventNotificationEl = document.getElementById('market-event-notification');
 const newsTickerTextEl = document.getElementById('news-ticker-text');
+const creditScoreValueEl = document.getElementById('credit-score-value');
+const interestRateValueEl = document.getElementById('interest-rate-value');
+const loanAmountValueEl = document.getElementById('loan-amount-value');
+const loanInputElement = document.getElementById('loan-input');
+const applyLoanButton = document.getElementById('apply-loan-button');
+const specialInvestmentsContainer = document.getElementById('special-investments-container');
 const updateButton = document.getElementById('update-button');
 
 let userFunds = 9000000;
 let marketState = 'normal'; // can be 'normal', 'bull', or 'bear'
+let creditScore = 700; // Starting credit score
+let interestRate = 5.0; // Starting interest rate
+let loanAmount = 0; // Starting loan amount
+let activeInvestments = [];
+const investmentOpportunities = [
+    { id: 1, name: "Bon Kerajaan Jangka Pendek", cost: 50000, risk: "Rendah", returnRange: [1.02, 1.05], duration: 5 },
+    { id: 2, name: "Dana Indeks Teknologi", cost: 100000, risk: "Sederhana", returnRange: [0.9, 1.2], duration: 10 },
+    { id: 3, name: "Projek Pembangunan Hartanah", cost: 250000, risk: "Sederhana", returnRange: [0.85, 1.3], duration: 15 },
+    { id: 4, name: "Ekspedisi Mencari Harta Karun", cost: 500000, risk: "Tinggi", returnRange: [0.1, 5.0], duration: 20 },
+    { id: 5, name: "Membiayai 'Startup' Kecerdasan Buatan", cost: 750000, risk: "Sangat Tinggi", returnRange: [0.0, 10.0], duration: 25 }
+];
+let availableInvestments = [];
 
 const economicNewsEvents = [
     {
@@ -138,11 +156,14 @@ function displayStocks() {
 
 function updateStats() {
     const portfolioValue = stocks.reduce((total, stock) => total + (stock.price * stock.owned), 0);
-    const netWorth = userFunds + portfolioValue;
+    const netWorth = userFunds + portfolioValue - loanAmount;
 
     fundsAmount.textContent = `RM${userFunds.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     portfolioValueEl.textContent = `RM${portfolioValue.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     netWorthValueEl.textContent = `RM${netWorth.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    creditScoreValueEl.textContent = creditScore;
+    interestRateValueEl.textContent = `${interestRate.toFixed(2)}%`;
+    loanAmountValueEl.textContent = `RM${loanAmount.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function updateStockPrices() {
@@ -157,6 +178,25 @@ function updateStockPrices() {
         newsTickerTextEl.style.animation = null;
     }
 
+    handleBankingEvents();
+    handleInvestmentEvents();
+
+    // Bonus Events RNG
+    const bonusRNG = Math.random();
+    if (bonusRNG < 0.01) { // 1% chance for inheritance
+        const amount = Math.floor(Math.random() * 1000000) + 500000;
+        userFunds += amount;
+        alert(`🎉 Warisan Tak Terduga! Anda menerima warisan sebanyak RM${amount.toLocaleString()} daripada saudara jauh!`);
+    } else if (bonusRNG < 0.03) { // 2% chance for lottery win
+        const amount = Math.floor(Math.random() * 50000) + 10000;
+        userFunds += amount;
+        alert(`🎉 Tuah Nombor! Anda menemui tiket loteri yang menang bernilai RM${amount.toLocaleString()}!`);
+    } else if (bonusRNG < 0.05) { // 2% chance for tax audit
+        const penalty = Math.floor(Math.random() * 150000) + 50000;
+        userFunds -= penalty;
+        creditScore -= 20;
+        alert(`🚨 Audit Cukai! Lembaga Hasil Dalam Negeri menemui penyelewengan dan anda dikenakan denda sebanyak RM${penalty.toLocaleString()}!`);
+    }
 
     // Random Event: Chance for a cash injection
     if (Math.random() < 0.1) { // 10% chance
@@ -218,6 +258,106 @@ function updateStockPrices() {
     displayStocks();
 }
 
+function handleBankingEvents() {
+    // Interest Rate Fluctuation
+    if (Math.random() < 0.1) { // 10% chance to change
+        const change = (Math.random() * 1) - 0.5; // Fluctuate between -0.5% and +0.5%
+        interestRate = Math.max(1.0, interestRate + change); // Minimum rate of 1.0%
+    }
+
+    // Credit Score Events
+    if (Math.random() < 0.15) { // 15% chance
+        const scoreChange = Math.floor(Math.random() * 20) + 10; // Change by 10-30 points
+        if (Math.random() < 0.5) {
+            creditScore += scoreChange;
+            alert(`🌟 Berita Baik! Skor kredit anda meningkat sebanyak ${scoreChange} mata kerana pengurusan kewangan yang baik.`);
+        } else {
+            creditScore -= scoreChange;
+            alert(`🚨 Amaran! Skor kredit anda menurun sebanyak ${scoreChange} mata kerana pembayaran lewat dikesan.`);
+        }
+        creditScore = Math.max(300, Math.min(850, creditScore)); // Clamp score between 300 and 850
+    }
+
+    // Banking Fees RNG
+    if (Math.random() < 0.08) { // 8% chance
+        const fee = Math.floor(Math.random() * 1000) + 500;
+        userFunds -= fee;
+        alert(`💸 Yuran Bank! Anda dikenakan bayaran sebanyak RM${fee.toLocaleString()} untuk yuran perkhidmatan.`);
+    }
+
+    // Loan Interest Payment
+    if (loanAmount > 0) {
+        const interestPayment = loanAmount * (interestRate / 100 / 12); // Monthly interest
+        userFunds -= interestPayment;
+        loanAmount += interestPayment; // Compound the interest for simplicity
+        alert(`💸 Bayaran Faedah! RM${interestPayment.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} telah ditolak untuk faedah pinjaman.`);
+    }
+}
+
+function displayInvestments() {
+    specialInvestmentsContainer.innerHTML = '';
+    availableInvestments.forEach(inv => {
+        const invEl = document.createElement('div');
+        invEl.classList.add('investment-opportunity');
+        invEl.innerHTML = `
+            <h4>${inv.name}</h4>
+            <p><strong>Kos:</strong> RM${inv.cost.toLocaleString()}</p>
+            <p><strong>Risiko:</strong> ${inv.risk}</p>
+            <p><strong>Potensi Pulangan:</strong> ${inv.returnRange[0] * 100}% - ${inv.returnRange[1] * 100}%</p>
+            <p><strong>Tempoh:</strong> ${inv.duration} Pusingan</p>
+            <button data-id="${inv.id}">Labur</button>
+        `;
+        specialInvestmentsContainer.appendChild(invEl);
+    });
+
+    specialInvestmentsContainer.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const investmentId = parseInt(e.target.dataset.id, 10);
+            const investment = availableInvestments.find(inv => inv.id === investmentId);
+            if (investment && userFunds >= investment.cost) {
+                userFunds -= investment.cost;
+                activeInvestments.push({ ...investment, turnsRemaining: investment.duration });
+                availableInvestments = availableInvestments.filter(inv => inv.id !== investmentId);
+                alert(`Anda telah melabur RM${investment.cost.toLocaleString()} dalam ${investment.name}.`);
+                displayInvestments();
+                updateStats();
+            } else {
+                alert("Dana tidak mencukupi untuk pelaburan ini.");
+            }
+        });
+    });
+}
+
+function handleInvestmentEvents() {
+    // New Investment Slots
+    if (Math.random() < 0.2 && availableInvestments.length < 3) { // 20% chance if less than 3 available
+        const potentialInvestments = investmentOpportunities.filter(p => !availableInvestments.some(a => a.id === p.id));
+        if (potentialInvestments.length > 0) {
+            const newInvestment = potentialInvestments[Math.floor(Math.random() * potentialInvestments.length)];
+            availableInvestments.push(newInvestment);
+            displayInvestments();
+        }
+    }
+
+    // Process matured investments
+    const maturedInvestments = [];
+    activeInvestments.forEach(inv => {
+        inv.turnsRemaining -= 1;
+        if (inv.turnsRemaining <= 0) {
+            maturedInvestments.push(inv);
+        }
+    });
+
+    maturedInvestments.forEach(inv => {
+        const returnRate = Math.random() * (inv.returnRange[1] - inv.returnRange[0]) + inv.returnRange[0];
+        const returnValue = inv.cost * returnRate;
+        userFunds += returnValue;
+        activeInvestments = activeInvestments.filter(a => a.id !== inv.id);
+        alert(`✅ Pelaburan Matang! Pelaburan anda dalam "${inv.name}" telah memulangkan RM${returnValue.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`);
+    });
+}
+
+
 function buyStock(stockId, quantity) {
     const stock = stocks.find(s => s.id === stockId);
     if (!stock) return;
@@ -254,6 +394,33 @@ updateButton.addEventListener('click', () => {
     updateStats();
 });
 
+applyLoanButton.addEventListener('click', () => {
+    const requestedAmount = parseInt(loanInputElement.value, 10);
+
+    if (isNaN(requestedAmount) || requestedAmount <= 0) {
+        alert("Sila masukkan jumlah pinjaman yang sah.");
+        return;
+    }
+
+    // Loan Approval RNG: Probability based on credit score
+    const approvalProbability = (creditScore - 300) / (850 - 300); // Scale score to 0-1 range
+    const isApproved = Math.random() < approvalProbability;
+
+    if (isApproved) {
+        userFunds += requestedAmount;
+        loanAmount += requestedAmount;
+        alert(`🎉 Pinjaman Diluluskan! RM${requestedAmount.toLocaleString()} telah ditambahkan pada dana anda.`);
+        updateStats();
+    } else {
+        creditScore -= 10; // Penalty for failed application
+        alert(`😞 Pinjaman Ditolak. Permohonan pinjaman anda tidak berjaya. Skor kredit anda telah menurun sedikit.`);
+        updateStats();
+    }
+    loanInputElement.value = ''; // Clear input
+});
+
+
 // Initial display
 displayStocks();
+displayInvestments();
 updateStats();

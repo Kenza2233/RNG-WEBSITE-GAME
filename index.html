@@ -25,7 +25,32 @@
                 <span class="label">💰 Nilai Bersih:</span>
                 <span id="net-worth-value"></span>
             </div>
-        <div id="market-event-notification"></div>
+            <div id="credit-score-container">
+                <span class="label">🌟 Skor Kredit:</span>
+                <span id="credit-score-value"></span>
+            </div>
+            <div id="interest-rate-container">
+                <span class="label">📈 Kadar Faedah:</span>
+                <span id="interest-rate-value"></span>
+            </div>
+             <div id="loan-amount-container">
+                <span class="label">💸 Jumlah Pinjaman:</span>
+                <span id="loan-amount-value"></span>
+            </div>
+            <div id="market-event-notification"></div>
+        </div>
+        <div class="banking-container">
+            <h3>Urusan Bank</h3>
+            <div class="loan-controls">
+                <input type="number" id="loan-input" placeholder="Jumlah Pinjaman" min="1000">
+                <button id="apply-loan-button">Mohon Pinjaman</button>
+            </div>
+        </div>
+        <div class="investments-container">
+            <h3>Peluang Pelaburan Khas</h3>
+            <div id="special-investments-container">
+                <!-- Peluang pelaburan akan ditambah di sini secara dinamik -->
+            </div>
         </div>
         <div id="stocks-container"></div>
         <button id="update-button" title="Kemas kini Harga Saham (Next Round)">🔄</button>
