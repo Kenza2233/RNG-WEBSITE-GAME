@@ -7,52 +7,106 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Permainan Simulasi Saham</h1>
-        <div id="news-ticker-container">
-            <div id="news-ticker-text">Tiada berita terkini.</div>
-        </div>
-        <div class="stats-container">
-            <div id="funds-container">
+    <div class="app-container">
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="logo">Game Logo</div>
+            <div class="main-balance">
                 <span class="bank-label">🏦 Bank:</span>
                 <span id="funds-amount"></span>
             </div>
-            <div id="portfolio-container">
-                <span class="label">📊 Portfolio:</span>
-                <span id="portfolio-value"></span>
+            <div class="player-level">Level: <span id="player-level-value">1</span></div>
+        </header>
+
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <nav>
+                <ul>
+                    <li><a href="#bank">Bank</a></li>
+                    <li><a href="#portfolio">Portfolio</a></li>
+                    <li><a href="#market">Market</a></li>
+                    <li><a href="#stats">Stats</a></li>
+                    <li><a href="#leaderboard">Leaderboard</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div id="market-view">
+                <h2>Market</h2>
+                <div id="stocks-container"></div>
             </div>
-            <div id="net-worth-container">
-                <span class="label">💰 Nilai Bersih:</span>
-                <span id="net-worth-value"></span>
+            <div id="portfolio-view" class="view" style="display:none;">
+                 <h2>Portfolio</h2>
+                <div class="stats-container">
+                    <div id="portfolio-container">
+                        <span class="label">📊 Portfolio Value:</span>
+                        <span id="portfolio-value"></span>
+                    </div>
+                    <div id="net-worth-container">
+                        <span class="label">💰 Net Worth:</span>
+                        <span id="net-worth-value"></span>
+                    </div>
+                </div>
             </div>
-            <div id="credit-score-container">
-                <span class="label">🌟 Skor Kredit:</span>
-                <span id="credit-score-value"></span>
+             <div id="bank-view" class="view" style="display:none;">
+                <h2>Bank</h2>
+                 <div class="banking-container">
+                    <div class="loan-controls">
+                        <input type="number" id="loan-input" placeholder="Jumlah Pinjaman" min="1000">
+                        <button id="apply-loan-button">Mohon Pinjaman</button>
+                    </div>
+                    <div id="loan-amount-container">
+                        <span class="label">💸 Jumlah Pinjaman:</span>
+                        <span id="loan-amount-value"></span>
+                    </div>
+                 </div>
             </div>
-            <div id="interest-rate-container">
-                <span class="label">📈 Kadar Faedah:</span>
-                <span id="interest-rate-value"></span>
+            <div id="stats-view" class="view" style="display:none;">
+                <h2>Stats</h2>
+                <div id="credit-score-container">
+                    <span class="label">🌟 Skor Kredit:</span>
+                    <span id="credit-score-value"></span>
+                </div>
+                <div id="interest-rate-container">
+                    <span class="label">📈 Kadar Faedah:</span>
+                    <span id="interest-rate-value"></span>
+                </div>
             </div>
-             <div id="loan-amount-container">
-                <span class="label">💸 Jumlah Pinjaman:</span>
-                <span id="loan-amount-value"></span>
+             <div class="investments-container">
+                <h3>Peluang Pelaburan Khas</h3>
+                <div id="special-investments-container">
+                    <!-- Peluang pelaburan akan ditambah di sini secara dinamik -->
+                </div>
             </div>
             <div id="market-event-notification"></div>
-        </div>
-        <div class="banking-container">
-            <h3>Urusan Bank</h3>
-            <div class="loan-controls">
-                <input type="number" id="loan-input" placeholder="Jumlah Pinjaman" min="1000">
-                <button id="apply-loan-button">Mohon Pinjaman</button>
+
+            <!-- Leaderboard Section -->
+            <div id="leaderboard-view" class="view" style="display:none;">
+                <h2>Leaderboard Kekayaan Global</h2>
+                <div id="leaderboard-container">
+                    <!-- Leaderboard content will be generated by script.js -->
+                </div>
             </div>
-        </div>
-        <div class="investments-container">
-            <h3>Peluang Pelaburan Khas</h3>
-            <div id="special-investments-container">
-                <!-- Peluang pelaburan akan ditambah di sini secara dinamik -->
+        </main>
+
+        <!-- Footer with News Ticker -->
+        <footer class="app-footer">
+            <div id="news-ticker-container">
+                <div id="news-ticker-text">Tiada berita terkini.</div>
             </div>
-        </div>
-        <div id="stocks-container"></div>
+        </footer>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav class="mobile-nav">
+            <a href="#bank">Bank</a>
+            <a href="#portfolio">Portfolio</a>
+            <a href="#market">Market</a>
+            <a href="#stats">Stats</a>
+            <a href="#leaderboard">Leaderboard</a>
+        </nav>
+
         <button id="update-button" title="Kemas kini Harga Saham (Next Round)">🔄</button>
     </div>
     <script src="script.js"></script>
