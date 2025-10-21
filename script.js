@@ -1,5 +1,8 @@
 const stocksContainer = document.getElementById('stocks-container');
+const fundsContainer = document.getElementById('funds-container');
 const updateButton = document.getElementById('update-button');
+
+let userFunds = 9000000;
 
 const stocks = [
     { name: 'Syarikat A', percentage: 0, price: 100.00, change: 0 },
@@ -26,6 +29,10 @@ function displayStocks() {
     });
 }
 
+function displayFunds() {
+    fundsContainer.innerHTML = `<h2>Dana Anda: RM${userFunds.toFixed(2)}</h2>`;
+}
+
 function updateStockPrices() {
     stocks.forEach(stock => {
         const change = (Math.random() - 0.5) * 10; // Random change between -5% and 5%
@@ -36,7 +43,11 @@ function updateStockPrices() {
     displayStocks();
 }
 
-updateButton.addEventListener('click', updateStockPrices);
+updateButton.addEventListener('click', () => {
+    updateStockPrices();
+    displayFunds();
+});
 
 // Initial display
 displayStocks();
+displayFunds();
